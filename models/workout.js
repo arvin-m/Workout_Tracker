@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+// defines the shape of the documents within that collection.
 const data = {
     day: {
         type: Date,
@@ -32,14 +33,26 @@ const data = {
         },
         distance: {
             type: Number
-        }
+        },
+        
 
     }]
 
 
 };
 
-const workoutSchema = new Schema(data);
+const workoutSchema = new Schema(data,{
+    toJSON: {
+      virtuals: true
+    }
+  });
+  // define virtual getter attributes to the scheema
+workoutSchema.virtual("totalDuration").get(function() {
+    return this.exercises.reduce((total, exercise) => {
+    return total + exercise.duration;
+  }, 0);
+});
+ // compile a model 
 const Workout = mongoose.model("Workout",workoutSchema);
 
 module.exports=Workout;
